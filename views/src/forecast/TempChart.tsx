@@ -53,7 +53,8 @@ export function TempChart({ days, units }: { days: ForecastDay[]; units: Units }
         {[0, last]
           .filter((v, i, a) => a.indexOf(v) === i)
           .map((i) => {
-            const d = days[i]!;
+            const d = days[i];
+            if (!d) return null;
             const anchor = days.length === 1 ? "middle" : i === 0 ? "end" : "start";
             const dx = days.length === 1 ? 0 : i === 0 ? -6 : 6;
             return (
