@@ -3,6 +3,7 @@ import { createApp } from "./app.js";
 import { config } from "./config.js";
 import { logger } from "./logger.js";
 import { createServer } from "./server.js";
+import { getViews } from "./ui.js";
 
 async function startHttp(): Promise<void> {
   const app = createApp();
@@ -29,7 +30,10 @@ async function startStdio(): Promise<void> {
 }
 
 const run = process.argv.includes("--stdio") ? startStdio : startHttp;
-run().catch((err: unknown) => {
-  logger.fatal({ err }, "Fatal startup error");
-  process.exit(1);
-});
+Promise.resolve()
+  .then(() => getViews()) // fail fast if the views have not been built
+  .then(run)
+  .catch((err: unknown) => {
+    logger.fatal({ err }, "Fatal startup error");
+    process.exit(1);
+  });

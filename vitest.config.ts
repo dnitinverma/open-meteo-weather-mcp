@@ -1,4 +1,7 @@
+import { fileURLToPath } from "node:url";
 import { defineConfig } from "vitest/config";
+
+const abs = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
   test: {
@@ -10,7 +13,7 @@ export default defineConfig({
           include: ["test/**/*.test.ts"],
           environment: "node",
           setupFiles: ["test/setup.ts"],
-          env: { LOG_LEVEL: "silent" },
+          env: { LOG_LEVEL: "silent", VIEWS_DIST_DIR: abs("./server/test/fixtures/views") },
         },
       },
     ],
