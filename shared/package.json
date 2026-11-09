@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Data contracts shared by the server and the views.",
   "exports": {
-    ".": "./contracts.ts"
+    ".": "./index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p ."

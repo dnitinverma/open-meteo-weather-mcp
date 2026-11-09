@@ -21,7 +21,8 @@
     "test:watch": "vitest",
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "smoke": "npm run smoke -w server"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
