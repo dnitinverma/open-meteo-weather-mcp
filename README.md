@@ -17,7 +17,16 @@ npm run build && npm start              # production build over HTTP
 node server/dist/index.js --stdio       # or over stdio
 ```
 
-Configuration (see `.env.example`): `PORT` (3001), `LOG_LEVEL` (info), `DAILY_UPSTREAM_LIMIT` (9000).
+Configuration (see `.env.example`):
+
+| Variable                | Default | Meaning                                                    |
+| ----------------------- | ------- | ---------------------------------------------------------- |
+| `PORT`                  | 3001    | HTTP port                                                  |
+| `LOG_LEVEL`             | info    | pino level                                                 |
+| `DAILY_UPSTREAM_LIMIT`  | 9000    | Real Open-Meteo requests per UTC day; then cache-only      |
+| `RATE_LIMIT_PER_MINUTE` | 60      | `POST /mcp` requests per IP per minute                     |
+| `TRUST_PROXY`           | 0       | Reverse-proxy hops to trust for the client IP (hosting: 1) |
+| `ALLOWED_HOSTS`         | –       | Optional Host allow-list (also applies to `/health`)       |
 
 ## Development
 

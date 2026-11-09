@@ -9,12 +9,27 @@ import { connectClient } from "./helpers.js";
 
 describe("config", () => {
   it("applies defaults", () => {
-    expect(loadConfig({})).toEqual({ PORT: 3001, LOG_LEVEL: "info", DAILY_UPSTREAM_LIMIT: 9000 });
+    expect(loadConfig({})).toEqual({
+      PORT: 3001,
+      LOG_LEVEL: "info",
+      DAILY_UPSTREAM_LIMIT: 9000,
+      RATE_LIMIT_PER_MINUTE: 60,
+      TRUST_PROXY: 0,
+      ALLOWED_HOSTS: [],
+    });
   });
   it("coerces numbers from strings", () => {
     expect(loadConfig({ PORT: "8080", DAILY_UPSTREAM_LIMIT: "10" })).toMatchObject({
       PORT: 8080,
       DAILY_UPSTREAM_LIMIT: 10,
+    });
+  });
+  it("parses ALLOWED_HOSTS and TRUST_PROXY", () => {
+    expect(
+      loadConfig({ ALLOWED_HOSTS: " a.example.com, b.example.com ,", TRUST_PROXY: "1" }),
+    ).toMatchObject({
+      ALLOWED_HOSTS: ["a.example.com", "b.example.com"],
+      TRUST_PROXY: 1,
     });
   });
   it("rejects invalid values with a readable message", () => {

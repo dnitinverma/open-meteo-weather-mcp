@@ -15,10 +15,15 @@ type Route = (url: URL) => Response | Promise<Response> | undefined;
  * the test. Returns the mock so tests can inspect calls.
  */
 export function mockFetch(...routes: Route[]) {
-  const fn = vi.fn(async (input: string | URL | Request, _init?: RequestInit) => {
+  const realFetch = globalThis.fetch;
+  const fn = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const url = new URL(
       typeof input === "string" ? input : input instanceof URL ? input : input.url,
     );
+    // Requests to a local test server are not Open-Meteo calls: let them through.
+    if (url.hostname === "127.0.0.1" || url.hostname === "localhost") {
+      return realFetch(input, init);
+    }
     for (const route of routes) {
       const res = await route(url);
       if (res) return res;

@@ -5,7 +5,22 @@ const LOG_LEVELS = ["fatal", "error", "warn", "info", "debug", "trace", "silent"
 export const configSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535).default(3001),
   LOG_LEVEL: z.enum(LOG_LEVELS).default("info"),
+  /** Real requests to Open-Meteo per UTC day; after that only cached data is served. */
   DAILY_UPSTREAM_LIMIT: z.coerce.number().int().positive().default(9000),
+  /** POST /mcp requests per IP per minute. */
+  RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(60),
+  /** Reverse-proxy hops to trust for the client IP (Render/Railway: 1). 0 = use the socket address. */
+  TRUST_PROXY: z.coerce.number().int().min(0).max(10).default(0),
+  /** Optional comma-separated Host allow-list (DNS-rebinding protection), e.g. "weather-mcp.example.com". */
+  ALLOWED_HOSTS: z
+    .string()
+    .default("")
+    .transform((s) =>
+      s
+        .split(",")
+        .map((h) => h.trim())
+        .filter(Boolean),
+    ),
 });
 
 export type Config = z.infer<typeof configSchema>;

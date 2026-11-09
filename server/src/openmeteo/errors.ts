@@ -48,3 +48,11 @@ export class UpstreamError extends WeatherError {
     this.name = "UpstreamError";
   }
 }
+
+/** The daily budget of upstream requests is used up; only cached data can be served until 00:00 UTC. */
+export class DailyLimitReached extends UpstreamError {
+  constructor() {
+    super(null, "daily upstream request limit reached");
+    this.name = "DailyLimitReached";
+  }
+}

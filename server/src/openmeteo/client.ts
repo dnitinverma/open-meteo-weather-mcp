@@ -1,7 +1,8 @@
 // The ONLY module that calls fetch() against Open-Meteo (CLAUDE.md rule 2).
+import { currentContext } from "../context.js";
 import { logger } from "../logger.js";
 import { responseCache } from "./cache.js";
-import { UpstreamError } from "./errors.js";
+import { DailyLimitReached, UpstreamError } from "./errors.js";
 import { usage } from "./usage.js";
 
 export const TIMEOUT_MS = 10_000;
@@ -34,6 +35,8 @@ async function readReason(res: Response): Promise<string> {
 
 async function fetchOnce(url: string): Promise<unknown> {
   const controller = new AbortController();
+  // Out of budget: cached data is still served (see fetchJson), real requests are not made.
+  if (usage.exhausted) throw new DailyLimitReached();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     usage.increment();
@@ -71,7 +74,13 @@ export async function fetchJson<T = unknown>(
 ): Promise<T> {
   if (options.ttlMs !== undefined) {
     const cached = responseCache.get(url);
-    if (cached !== undefined) return cached as T;
+    if (cached !== undefined) {
+      const ctx = currentContext();
+      if (ctx) ctx.cacheHits++;
+      return cached as T;
+    }
+    const ctx = currentContext();
+    if (ctx) ctx.cacheMisses++;
   }
 
   let lastError: UpstreamError | undefined;
@@ -88,7 +97,7 @@ export async function fetchJson<T = unknown>(
         { host: new URL(url).host, attempt, status: lastError.status, retryable },
         "Open-Meteo request failed",
       );
-      if (!retryable) break;
+      if (!retryable || lastError instanceof DailyLimitReached) break;
     }
   }
   logger.warn(

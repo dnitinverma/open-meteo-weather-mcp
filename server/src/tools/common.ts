@@ -1,7 +1,9 @@
+import { randomUUID } from "node:crypto";
 import type { CallToolResult, StandardSchemaWithJSON } from "@modelcontextprotocol/server";
 import type { ErrorCode, Place, ToolError } from "@weather/shared";
 import { ATTRIBUTION, placeLabel } from "@weather/shared";
 import { z } from "zod";
+import { currentContext, requestContext, type RequestContext } from "../context.js";
 import { logger } from "../logger.js";
 import { AmbiguousLocation, UpstreamError, WeatherError } from "../openmeteo/errors.js";
 
@@ -164,19 +166,58 @@ export function toErrorResult(err: unknown, tool: string): CallToolResult {
   );
 }
 
-/** Wrap a handler: zod-parse the raw args, run, and convert failures into ToolError results. */
+/** hit = every upstream lookup came from cache, miss = none did, partial = mixed, none = no lookups. */
+export function cacheLabel(hits: number, misses: number): "hit" | "miss" | "partial" | "none" {
+  if (hits > 0 && misses > 0) return "partial";
+  if (hits > 0) return "hit";
+  if (misses > 0) return "miss";
+  return "none";
+}
+
+function errorCodeOf(result: CallToolResult): ErrorCode | undefined {
+  if (!result.isError) return undefined;
+  const code = (result.structuredContent as Partial<ToolError> | undefined)?.error?.code;
+  return code;
+}
+
+/**
+ * Wrap a handler: zod-parse the raw args, run, and convert failures into ToolError results.
+ * Logs one structured line per call: request id, tool, latency, cache hit/miss, error code.
+ * Arguments and bodies are never logged.
+ */
 export function toolHandler<S extends z.ZodType, T extends object>(
   name: string,
   schema: S,
   run: (input: z.output<S>) => Promise<ToolOutput<T>>,
 ): (args: unknown) => Promise<CallToolResult> {
   return async (args: unknown) => {
-    try {
-      const input = schema.parse(args ?? {});
-      return okResult(await run(input));
-    } catch (err) {
-      return toErrorResult(err, name);
-    }
+    const started = performance.now();
+    const ctx: RequestContext = {
+      requestId: currentContext()?.requestId ?? randomUUID(),
+      cacheHits: 0,
+      cacheMisses: 0,
+    };
+    return requestContext.run(ctx, async () => {
+      let result: CallToolResult;
+      try {
+        const input = schema.parse(args ?? {});
+        result = okResult(await run(input));
+      } catch (err) {
+        result = toErrorResult(err, name);
+      }
+      const errorCode = errorCodeOf(result);
+      logger.info(
+        {
+          requestId: ctx.requestId,
+          tool: name,
+          latencyMs: Math.round(performance.now() - started),
+          cache: cacheLabel(ctx.cacheHits, ctx.cacheMisses),
+          ...(errorCode ? { errorCode } : {}),
+        },
+        "tool call",
+      );
+      return result;
+    });
   };
 }
 
