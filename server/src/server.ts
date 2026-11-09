@@ -1,23 +1,26 @@
 import { McpServer } from "@modelcontextprotocol/server";
-import { z } from "zod";
+import { advertise, READ_ONLY_ANNOTATIONS } from "./tools/common.js";
+import { ALL_TOOLS } from "./tools/index.js";
 import { VERSION } from "./version.js";
 
 export const SERVER_NAME = "open-meteo-weather";
 
-/** Builds a fresh MCP server with all tools and ui:// resources registered. */
+/** Builds a fresh MCP server with all tools (and, from Phase 4, ui:// resources) registered. */
 export function createServer(): McpServer {
   const server = new McpServer({ name: SERVER_NAME, version: VERSION });
 
-  server.registerTool(
-    "ping",
-    {
-      title: "Ping",
-      description: "Health check. Returns pong.",
-      inputSchema: z.object({}),
-      annotations: { readOnlyHint: true, openWorldHint: false },
-    },
-    async () => ({ content: [{ type: "text", text: "pong" }] }),
-  );
+  for (const tool of ALL_TOOLS) {
+    server.registerTool(
+      tool.name,
+      {
+        title: tool.title,
+        description: tool.description,
+        inputSchema: advertise(tool.inputSchema),
+        annotations: { title: tool.title, ...READ_ONLY_ANNOTATIONS },
+      },
+      tool.handler,
+    );
+  }
 
   return server;
 }

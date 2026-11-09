@@ -10,6 +10,7 @@ export default defineConfig({
           include: ["test/**/*.test.ts"],
           environment: "node",
           setupFiles: ["test/setup.ts"],
+          env: { LOG_LEVEL: "silent" },
         },
       },
     ],

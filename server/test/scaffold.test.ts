@@ -24,10 +24,9 @@ describe("config", () => {
 });
 
 describe("MCP server (in-memory)", () => {
-  it("ping returns pong", async () => {
+  it("connects and lists tools", async () => {
     const { client, close } = await connectClient();
-    const result = await client.callTool({ name: "ping", arguments: {} });
-    expect(result.content).toEqual([{ type: "text", text: "pong" }]);
+    expect((await client.listTools()).tools.length).toBeGreaterThan(0);
     await close();
   });
 });
@@ -49,13 +48,11 @@ describe("HTTP app", () => {
     expect(await res.json()).toEqual({ status: "ok", version: VERSION });
   });
 
-  it("POST /mcp serves ping over Streamable HTTP (stateless)", async () => {
+  it("POST /mcp serves tools over Streamable HTTP (stateless)", async () => {
     const client = new Client({ name: "http-test", version: "0.0.0" });
     await client.connect(new StreamableHTTPClientTransport(new URL(`${base}/mcp`)));
     const tools = await client.listTools();
-    expect(tools.tools.map((t) => t.name)).toContain("ping");
-    const result = await client.callTool({ name: "ping", arguments: {} });
-    expect(result.content).toEqual([{ type: "text", text: "pong" }]);
+    expect(tools.tools.map((t) => t.name)).toContain("get_forecast");
     await client.close();
   });
 
