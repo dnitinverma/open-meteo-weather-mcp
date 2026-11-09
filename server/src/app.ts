@@ -77,22 +77,25 @@ export function createApp(options: AppOptions = {}): Express {
 
   app.post("/mcp", limiter, mcpHeaders, async (req: Request, res: Response) => {
     const requestId = String(res.getHeader("X-Request-Id"));
-    await requestContext.run({ requestId, cacheHits: 0, cacheMisses: 0 }, async () => {
-      // Stateless mode: a fresh server + transport per request.
-      const server = createServer();
-      const transport = new NodeStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-      res.on("close", () => {
-        transport.close().catch(() => {});
-        server.close().catch(() => {});
-      });
-      try {
-        await server.connect(transport);
-        await transport.handleRequest(req, res, req.body);
-      } catch (err) {
-        logger.error({ requestId, err }, "MCP request failed");
-        if (!res.headersSent) rpcError(res, 500, "Internal server error");
-      }
-    });
+    await requestContext.run(
+      { requestId, cacheHits: 0, cacheMisses: 0, staleAgeMs: 0 },
+      async () => {
+        // Stateless mode: a fresh server + transport per request.
+        const server = createServer();
+        const transport = new NodeStreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+        res.on("close", () => {
+          transport.close().catch(() => {});
+          server.close().catch(() => {});
+        });
+        try {
+          await server.connect(transport);
+          await transport.handleRequest(req, res, req.body);
+        } catch (err) {
+          logger.error({ requestId, err }, "MCP request failed");
+          if (!res.headersSent) rpcError(res, 500, "Internal server error");
+        }
+      },
+    );
   });
 
   // Stateless server: no server-initiated SSE stream and no sessions to delete.

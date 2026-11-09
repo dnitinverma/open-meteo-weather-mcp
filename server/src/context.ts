@@ -5,6 +5,8 @@ export interface RequestContext {
   requestId: string;
   cacheHits: number;
   cacheMisses: number;
+  /** Age of the oldest stale cached answer served during this call (0 = none). */
+  staleAgeMs: number;
 }
 
 export const requestContext = new AsyncLocalStorage<RequestContext>();

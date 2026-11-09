@@ -43,6 +43,8 @@ export class UpstreamError extends WeatherError {
   constructor(
     readonly status: number | null,
     readonly reason: string,
+    /** Whether another attempt could help (network errors, 5xx and 429 by default). */
+    readonly retryable: boolean = status === null || status === 429 || status >= 500,
   ) {
     super("The weather service is temporarily unavailable. Please try again in a minute.");
     this.name = "UpstreamError";
@@ -52,7 +54,23 @@ export class UpstreamError extends WeatherError {
 /** The daily budget of upstream requests is used up; only cached data can be served until 00:00 UTC. */
 export class DailyLimitReached extends UpstreamError {
   constructor() {
-    super(null, "daily upstream request limit reached");
+    super(null, "daily upstream request limit reached", false);
     this.name = "DailyLimitReached";
+  }
+}
+
+/** Open-Meteo reported its per-IP daily cap for a host; further requests wait out a cooldown. */
+export class UpstreamDailyCap extends UpstreamError {
+  constructor(reason: string) {
+    super(429, reason, false);
+    this.name = "UpstreamDailyCap";
+  }
+}
+
+/** A host is in cooldown after UpstreamDailyCap: no network request was made. */
+export class UpstreamCooldown extends UpstreamError {
+  constructor(host: string) {
+    super(429, `${host} is cooling down after its daily request cap`, false);
+    this.name = "UpstreamCooldown";
   }
 }

@@ -1,5 +1,5 @@
 import type { Place } from "@weather/shared";
-import { TTL } from "./cache.js";
+import { STALE, TTL } from "./cache.js";
 import { fetchJson } from "./client.js";
 import { buildUrl, ENDPOINTS } from "./params.js";
 
@@ -32,6 +32,7 @@ export async function searchPlaces(name: string, count = 5): Promise<GeoPlace[]>
   });
   const data = await fetchJson<RawGeoResponse>(buildUrl(ENDPOINTS.geocoding, params), {
     ttlMs: TTL.geocoding,
+    staleMs: STALE.geocoding,
   });
   return (data.results ?? []).map((r) => {
     const place: GeoPlace = {

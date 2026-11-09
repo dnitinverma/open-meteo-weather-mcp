@@ -1,5 +1,5 @@
 import type { HistoricalResult, Units } from "@weather/shared";
-import { TTL } from "./cache.js";
+import { STALE, TTL } from "./cache.js";
 import { fetchJson } from "./client.js";
 import { buildUrl, ENDPOINTS, weatherParams, type WeatherResponseBase } from "./params.js";
 
@@ -31,6 +31,7 @@ export async function getArchive(
   params.set("daily", "temperature_2m_max,temperature_2m_min,precipitation_sum");
   const data = await fetchJson<RawArchiveResponse>(buildUrl(ENDPOINTS.archive, params), {
     ttlMs: TTL.historical,
+    staleMs: STALE.historical,
   });
   const d = data.daily;
   const days: HistoricalDay[] = [];

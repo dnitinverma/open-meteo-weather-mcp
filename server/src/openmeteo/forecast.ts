@@ -1,6 +1,6 @@
 import type { ForecastDay, HourlyPoint, Units } from "@weather/shared";
 import { describeWeatherCode } from "@weather/shared";
-import { TTL } from "./cache.js";
+import { STALE, TTL } from "./cache.js";
 import { fetchJson } from "./client.js";
 import { buildUrl, ENDPOINTS, weatherParams, type WeatherResponseBase } from "./params.js";
 
@@ -53,6 +53,7 @@ export async function getCurrent(
   params.set("current", CURRENT_VARS.join(","));
   const data = await fetchJson<RawCurrentResponse>(buildUrl(ENDPOINTS.forecast, params), {
     ttlMs: TTL.current,
+    staleMs: STALE.current,
   });
   const c = data.current;
   return {
@@ -107,6 +108,7 @@ export async function getDailyForecast(
   params.set("forecast_days", String(days));
   const data = await fetchJson<RawDailyResponse>(buildUrl(ENDPOINTS.forecast, params), {
     ttlMs: TTL.forecast,
+    staleMs: STALE.forecast,
   });
   const d = data.daily;
   const out: ForecastDay[] = [];
@@ -159,6 +161,7 @@ export async function getHourlyForDate(
   params.set("end_date", date);
   const data = await fetchJson<RawHourlyResponse>(buildUrl(ENDPOINTS.forecast, params), {
     ttlMs: TTL.forecast,
+    staleMs: STALE.forecast,
   });
   const h = data.hourly;
   const hours: HourlyPoint[] = [];

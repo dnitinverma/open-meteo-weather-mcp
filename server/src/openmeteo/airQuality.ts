@@ -1,6 +1,6 @@
 import type { AirQualityResult } from "@weather/shared";
 import { aqiCategory } from "@weather/shared";
-import { TTL } from "./cache.js";
+import { STALE, TTL } from "./cache.js";
 import { fetchJson } from "./client.js";
 import { buildUrl, ENDPOINTS, weatherParams, type WeatherResponseBase } from "./params.js";
 
@@ -23,6 +23,7 @@ export async function getAirQuality(
   params.set("forecast_days", String(days));
   const data = await fetchJson<RawAirQualityResponse>(buildUrl(ENDPOINTS.airQuality, params), {
     ttlMs: TTL.airQuality,
+    staleMs: STALE.airQuality,
   });
 
   const us_aqi = Math.round(data.current.us_aqi ?? 0);

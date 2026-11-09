@@ -100,8 +100,24 @@ export interface ToolOutput<T> {
   data: T;
 }
 
-export function okResult<T extends object>({ lines, data }: ToolOutput<T>): CallToolResult {
-  const all = [...lines.slice(0, MAX_TEXT_LINES - 1), ATTRIBUTION_LINE];
+/** "Note: live data is temporarily unavailable; showing results saved 25 min ago." */
+export function staleNote(ageMs: number): string {
+  const min = Math.max(1, Math.round(ageMs / 60_000));
+  const age =
+    min < 90
+      ? `${min} min`
+      : min < 2 * 24 * 60
+        ? `${Math.round(min / 60)} h`
+        : `${Math.round(min / 1440)} days`;
+  return `Note: live data is temporarily unavailable; showing results saved ${age} ago.`;
+}
+
+export function okResult<T extends object>(
+  { lines, data }: ToolOutput<T>,
+  note?: string,
+): CallToolResult {
+  const body = lines.slice(0, MAX_TEXT_LINES - 1 - (note ? 1 : 0));
+  const all = [...body, ...(note ? [note] : []), ATTRIBUTION_LINE];
   return {
     content: [{ type: "text", text: all.join("\n") }],
     structuredContent: data as Record<string, unknown>,
@@ -196,12 +212,14 @@ export function toolHandler<S extends z.ZodType, T extends object>(
       requestId: currentContext()?.requestId ?? randomUUID(),
       cacheHits: 0,
       cacheMisses: 0,
+      staleAgeMs: 0,
     };
     return requestContext.run(ctx, async () => {
       let result: CallToolResult;
       try {
         const input = schema.parse(args ?? {});
-        result = okResult(await run(input));
+        const output = await run(input);
+        result = okResult(output, ctx.staleAgeMs > 0 ? staleNote(ctx.staleAgeMs) : undefined);
       } catch (err) {
         result = toErrorResult(err, name);
       }
@@ -212,6 +230,7 @@ export function toolHandler<S extends z.ZodType, T extends object>(
           tool: name,
           latencyMs: Math.round(performance.now() - started),
           cache: cacheLabel(ctx.cacheHits, ctx.cacheMisses),
+          ...(ctx.staleAgeMs > 0 ? { stale: true } : {}),
           ...(errorCode ? { errorCode } : {}),
         },
         "tool call",
