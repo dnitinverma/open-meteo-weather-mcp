@@ -1,0 +1,13 @@
+{
+  "name": "@weather/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Data contracts shared by the server and the views.",
+  "exports": {
+    ".": "./contracts.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  }
+}
