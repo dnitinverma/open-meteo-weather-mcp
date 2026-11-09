@@ -1,0 +1,29 @@
+{
+  "place": {
+    "name": "Delhi",
+    "country": "India",
+    "country_code": "IN",
+    "latitude": 28.65195,
+    "longitude": 77.23149,
+    "timezone": "Asia/Kolkata",
+    "admin1": "National Capital Territory of Delhi"
+  },
+  "current": {
+    "time": "2026-11-09T15:30",
+    "us_aqi": 175,
+    "category": "Unhealthy",
+    "pm2_5": 73.3,
+    "pm10": 110.6
+  },
+  "daily": [
+    {
+      "date": "2026-11-09",
+      "us_aqi_max": 180,
+      "category": "Unhealthy"
+    }
+  ],
+  "attribution": {
+    "text": "Weather data by Open-Meteo.com",
+    "url": "https://open-meteo.com"
+  }
+}

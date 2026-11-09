@@ -1,0 +1,228 @@
+/*
+ * Theme: host style variables (MCP Apps) with light-dark() fallbacks that follow
+ * prefers-color-scheme. Components use only --wx-* tokens; never hard-coded text colours.
+ * Fallback palette contrast (text on bg): light 16:1 / muted 7.7:1; dark 15:1 / muted 7.4:1.
+ */
+:root {
+  color-scheme: light dark;
+  --wx-bg: var(--color-background-primary, light-dark(#ffffff, #1c1c1f));
+  --wx-bg-subtle: var(--color-background-secondary, light-dark(#f4f4f5, #27272a));
+  --wx-bg-highlight: var(--color-background-info, light-dark(#eff6ff, #172554));
+  --wx-text: var(--color-text-primary, light-dark(#18181b, #f4f4f5));
+  --wx-text-muted: var(--color-text-secondary, light-dark(#52525b, #a1a1aa));
+  --wx-text-danger: var(--color-text-danger, light-dark(#b91c1c, #fca5a5));
+  --wx-border: var(--color-border-primary, light-dark(#d4d4d8, #3f3f46));
+  --wx-ring: var(--color-ring-primary, light-dark(#2563eb, #93c5fd));
+  --wx-accent: light-dark(#1d4ed8, #93c5fd);
+  --wx-accent-text: light-dark(#ffffff, #0b1220);
+  --wx-max: light-dark(#c2410c, #fdba74);
+  --wx-min: light-dark(#1d4ed8, #93c5fd);
+  --wx-rain: light-dark(#0369a1, #7dd3fc);
+  --wx-night-bg: light-dark(#e0e7ff, #1e1b4b);
+  --wx-radius: var(--border-radius-lg, 12px);
+  --wx-radius-sm: var(--border-radius-sm, 6px);
+  --wx-font: var(
+    --font-sans,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif
+  );
+  --wx-text-sm: 13px;
+  --wx-text-md: 14px;
+}
+
+.wx-theme-light {
+  color-scheme: light;
+}
+.wx-theme-dark {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--wx-bg);
+  color: var(--wx-text);
+  font-family: var(--wx-font);
+  font-size: var(--wx-text-md);
+  line-height: 1.4;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--wx-ring);
+  outline-offset: 2px;
+}
+
+.wx-card {
+  width: 100%;
+  min-width: 300px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px 16px 10px;
+  background: var(--wx-bg);
+  color: var(--wx-text);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wx-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.wx-header h1 {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold, 600);
+  margin: 0;
+  line-height: 1.25;
+}
+.wx-header .wx-sub {
+  font-size: var(--wx-text-sm);
+  color: var(--wx-text-muted);
+  margin: 2px 0 0;
+}
+
+.wx-seg {
+  display: inline-flex;
+  border: 1px solid var(--wx-border);
+  border-radius: var(--wx-radius-sm);
+  overflow: hidden;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+.wx-seg button {
+  background: transparent;
+  border: 0;
+  padding: 5px 11px;
+  font-size: var(--wx-text-sm);
+  cursor: pointer;
+  min-height: 30px;
+}
+.wx-seg button + button {
+  border-left: 1px solid var(--wx-border);
+}
+.wx-seg button[aria-pressed="true"] {
+  background: var(--wx-accent);
+  color: var(--wx-accent-text);
+  font-weight: var(--font-weight-semibold, 600);
+}
+.wx-seg button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.wx-btn {
+  background: var(--wx-bg-subtle);
+  border: 1px solid var(--wx-border);
+  border-radius: var(--wx-radius-sm);
+  padding: 6px 12px;
+  font-size: var(--wx-text-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.wx-btn:hover {
+  border-color: var(--wx-ring);
+}
+.wx-btn:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.wx-icon {
+  display: inline-block;
+  line-height: 1;
+}
+
+.wx-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wx-text-muted);
+  font-size: var(--wx-text-sm);
+  padding: 16px 0;
+}
+.wx-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--wx-border);
+  border-top-color: var(--wx-accent);
+  border-radius: 50%;
+  animation: wx-spin 0.8s linear infinite;
+}
+@keyframes wx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wx-spinner {
+    animation: none;
+  }
+}
+
+.wx-error {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+.wx-error p {
+  margin: 0;
+}
+.wx-error .wx-error-title {
+  color: var(--wx-text-danger);
+  font-weight: var(--font-weight-semibold, 600);
+}
+.wx-error ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wx-footer {
+  border-top: 1px solid var(--wx-border);
+  padding-top: 8px;
+  font-size: var(--wx-text-sm);
+  color: var(--wx-text-muted);
+}
+.wx-footer a {
+  color: var(--wx-text-muted);
+}
+
+.wx-muted {
+  color: var(--wx-text-muted);
+}
+.wx-small {
+  font-size: var(--wx-text-sm);
+}
+.wx-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

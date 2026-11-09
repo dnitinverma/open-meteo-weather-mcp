@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "LOCATION_NOT_FOUND",
+    "message": "No place found matching \"Xyzabc\". Check the spelling or add a country, e.g. \"Paris, France\"."
+  }
+}

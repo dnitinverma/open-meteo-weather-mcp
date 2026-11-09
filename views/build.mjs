@@ -4,7 +4,8 @@ import { readdirSync, mkdirSync } from "node:fs";
 import { build } from "vite";
 
 const watch = process.argv.includes("--watch");
-const entries = readdirSync(".").filter((f) => f.endsWith(".html"));
+// preview.html is a local dev page (npm run preview:views), not a view.
+const entries = readdirSync(".").filter((f) => f.endsWith(".html") && f !== "preview.html");
 mkdirSync("dist", { recursive: true });
 
 if (entries.length === 0) {

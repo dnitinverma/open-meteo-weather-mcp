@@ -22,7 +22,8 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "smoke": "npm run smoke -w server"
+    "smoke": "npm run smoke -w server",
+    "preview:views": "npm run preview -w views"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

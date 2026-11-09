@@ -1,0 +1,35 @@
+{
+  "error": {
+    "code": "AMBIGUOUS_LOCATION",
+    "message": "\"Springfield\" matches several places. Say which one you mean.",
+    "alternatives": [
+      {
+        "name": "Springfield",
+        "country": "United States",
+        "country_code": "US",
+        "latitude": 37.21533,
+        "longitude": -93.29824,
+        "timezone": "America/Chicago",
+        "admin1": "Missouri"
+      },
+      {
+        "name": "Springfield",
+        "country": "United States",
+        "country_code": "US",
+        "latitude": 39.80172,
+        "longitude": -89.64371,
+        "timezone": "America/Chicago",
+        "admin1": "Illinois"
+      },
+      {
+        "name": "Springfield",
+        "country": "United States",
+        "country_code": "US",
+        "latitude": 42.10148,
+        "longitude": -72.58981,
+        "timezone": "America/New_York",
+        "admin1": "Massachusetts"
+      }
+    ]
+  }
+}

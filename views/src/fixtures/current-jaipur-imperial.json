@@ -1,0 +1,26 @@
+{
+  "place": {
+    "name": "Jaipur",
+    "country": "India",
+    "country_code": "IN",
+    "latitude": 26.91962,
+    "longitude": 75.78781,
+    "timezone": "Asia/Kolkata",
+    "admin1": "Rajasthan"
+  },
+  "units": "imperial",
+  "observed_at": "2026-11-09T16:15",
+  "temperature": 85,
+  "apparent_temperature": 85.7,
+  "humidity": 36,
+  "wind_speed": 2.1,
+  "wind_direction": 223,
+  "precipitation": 0,
+  "weather_code": 0,
+  "condition": "Clear sky",
+  "is_day": true,
+  "attribution": {
+    "text": "Weather data by Open-Meteo.com",
+    "url": "https://open-meteo.com"
+  }
+}

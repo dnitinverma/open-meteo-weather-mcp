@@ -1,0 +1,102 @@
+{
+  "place": {
+    "name": "Jaipur",
+    "country": "India",
+    "country_code": "IN",
+    "latitude": 26.91962,
+    "longitude": 75.78781,
+    "timezone": "Asia/Kolkata",
+    "admin1": "Rajasthan"
+  },
+  "units": "imperial",
+  "days": [
+    {
+      "date": "2026-11-09",
+      "weather_code": 0,
+      "condition": "Clear sky",
+      "temp_max": 86.3,
+      "temp_min": 64.8,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-09T06:41",
+      "sunset": "2026-11-09T17:38",
+      "uv_index_max": 5.3
+    },
+    {
+      "date": "2026-11-10",
+      "weather_code": 1,
+      "condition": "Mainly clear",
+      "temp_max": 82.9,
+      "temp_min": 64.1,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-10T06:42",
+      "sunset": "2026-11-10T17:38",
+      "uv_index_max": 5.3
+    },
+    {
+      "date": "2026-11-11",
+      "weather_code": 1,
+      "condition": "Mainly clear",
+      "temp_max": 83.5,
+      "temp_min": 63.1,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-11T06:43",
+      "sunset": "2026-11-11T17:37",
+      "uv_index_max": 5.3
+    },
+    {
+      "date": "2026-11-12",
+      "weather_code": 1,
+      "condition": "Mainly clear",
+      "temp_max": 85.5,
+      "temp_min": 65.2,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-12T06:44",
+      "sunset": "2026-11-12T17:37",
+      "uv_index_max": 5.15
+    },
+    {
+      "date": "2026-11-13",
+      "weather_code": 3,
+      "condition": "Overcast",
+      "temp_max": 86,
+      "temp_min": 66.2,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-13T06:44",
+      "sunset": "2026-11-13T17:36",
+      "uv_index_max": 5.25
+    },
+    {
+      "date": "2026-11-14",
+      "weather_code": 2,
+      "condition": "Partly cloudy",
+      "temp_max": 86.1,
+      "temp_min": 67.2,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 0,
+      "sunrise": "2026-11-14T06:45",
+      "sunset": "2026-11-14T17:36",
+      "uv_index_max": 4.95
+    },
+    {
+      "date": "2026-11-15",
+      "weather_code": 0,
+      "condition": "Clear sky",
+      "temp_max": 84.7,
+      "temp_min": 65.4,
+      "precipitation_sum": 0,
+      "precipitation_probability_max": 4,
+      "sunrise": "2026-11-15T06:46",
+      "sunset": "2026-11-15T17:35",
+      "uv_index_max": 4.9
+    }
+  ],
+  "attribution": {
+    "text": "Weather data by Open-Meteo.com",
+    "url": "https://open-meteo.com"
+  }
+}

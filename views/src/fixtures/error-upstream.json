@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "UPSTREAM_UNAVAILABLE",
+    "message": "The weather service is temporarily unavailable. Please try again in a minute."
+  }
+}

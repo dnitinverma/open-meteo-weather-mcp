@@ -1,0 +1,25 @@
+{
+  "place": {
+    "name": "35.68, 139.69",
+    "country": "",
+    "country_code": "",
+    "latitude": 35.68,
+    "longitude": 139.69,
+    "timezone": "Asia/Tokyo"
+  },
+  "units": "metric",
+  "observed_at": "2026-11-09T19:45",
+  "temperature": 9.1,
+  "apparent_temperature": 8,
+  "humidity": 95,
+  "wind_speed": 4.8,
+  "wind_direction": 347,
+  "precipitation": 0,
+  "weather_code": 3,
+  "condition": "Overcast",
+  "is_day": false,
+  "attribution": {
+    "text": "Weather data by Open-Meteo.com",
+    "url": "https://open-meteo.com"
+  }
+}

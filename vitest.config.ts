@@ -16,6 +16,15 @@ export default defineConfig({
           env: { LOG_LEVEL: "silent", VIEWS_DIST_DIR: abs("./server/test/fixtures/views") },
         },
       },
+      {
+        test: {
+          name: "views",
+          root: "./views",
+          include: ["test/**/*.test.{ts,tsx}"],
+          environment: "jsdom",
+          setupFiles: ["test/setup.ts"],
+        },
+      },
     ],
   },
 });
