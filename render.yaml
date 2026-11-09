@@ -1,0 +1,26 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: open-meteo-weather-mcp
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free # may sleep after 15 min idle; the first request then takes about a minute
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      # PORT is provided by Render (default 10000); the server binds 0.0.0.0:$PORT.
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: DAILY_UPSTREAM_LIMIT
+        value: "9000"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "60"
+      # Render puts one reverse proxy in front of the service: trust one hop for the client IP.
+      - key: TRUST_PROXY
+        value: "1"
+      # Optional: restrict Host headers (also applies to /health; Render's health check works with
+      # the service's own hostname, so include both that and your custom domain if you set this).
+      # - key: ALLOWED_HOSTS
+      #   value: weather-mcp.yourdomain.com,open-meteo-weather-mcp.onrender.com

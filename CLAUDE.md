@@ -40,7 +40,7 @@ Full plan: `docs/BUILD_PLAN.md` (phases, data contracts, done-when checks).
 │   │   ├── index.ts         # entry: HTTP (default) or --stdio
 │   │   ├── app.ts           # Express: POST /mcp (stateless Streamable HTTP), GET /health
 │   │   ├── server.ts        # createServer(): registers tools + ui:// resources
-│   │   ├── config.ts        # zod-validated env (PORT, LOG_LEVEL, DAILY_UPSTREAM_LIMIT)
+│   │   ├── config.ts        # zod-validated env (PORT, LOG_LEVEL, limits, TRUST_PROXY, ALLOWED_HOSTS)
 │   │   ├── openmeteo/       # client, geocoding, weather codes, cache
 │   │   └── tools/           # one file per tool
 │   ├── test/                # vitest; fixtures in test/fixtures
@@ -50,7 +50,8 @@ Full plan: `docs/BUILD_PLAN.md` (phases, data contracts, done-when checks).
 │   ├── src/{current,forecast,air-quality,history,shared}/
 │   ├── build.mjs            # runs Vite once per entry → dist/<name>.html (vite-plugin-singlefile)
 │   └── vite.config.ts
-├── Dockerfile
+├── Dockerfile               # multi-stage, non-root runtime
+├── render.yaml              # Render Blueprint
 └── README.md
 ```
 
