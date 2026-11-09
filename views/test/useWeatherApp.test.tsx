@@ -100,3 +100,56 @@ describe("useWeatherApp", () => {
     expect(result.current.data).not.toBeNull();
   });
 });
+
+describe("restorePlace", () => {
+  const named = {
+    name: "Jaipur",
+    admin1: "Rajasthan",
+    country: "India",
+    country_code: "IN",
+    latitude: 26.91962,
+    longitude: 75.78781,
+    timezone: "Asia/Kolkata",
+  };
+  const coordPlace = {
+    ...named,
+    name: "26.92, 75.79",
+    admin1: undefined,
+    country: "",
+    country_code: "",
+  };
+
+  it("keeps the known name when a coordinate re-call returns the same spot", async () => {
+    const { restorePlace } = await import("../src/shared/useWeatherApp");
+    expect(restorePlace({ place: coordPlace }, named).place.name).toBe("Jaipur");
+  });
+
+  it("does not rename a different spot or a named result", async () => {
+    const { restorePlace } = await import("../src/shared/useWeatherApp");
+    const far = { ...coordPlace, latitude: 10 };
+    expect(restorePlace({ place: far }, named).place.name).toBe("26.92, 75.79");
+    const other = { ...named, name: "Noida" };
+    expect(restorePlace({ place: other }, named).place.name).toBe("Noida");
+  });
+
+  it("the hook restores the name after a tab re-call", async () => {
+    const { result } = renderHook(() => useWeatherApp("forecast", forecastResultSchema));
+    act(() => deliver(ok(forecast3)));
+    const coords = {
+      ...forecast7,
+      place: {
+        ...forecast7.place,
+        name: "26.92, 75.79",
+        admin1: undefined,
+        country: "",
+        country_code: "",
+      },
+    };
+    fake.app!.callServerTool.mockResolvedValue(ok(coords));
+    await act(() =>
+      result.current.callTool("get_forecast", { latitude: 26.92, longitude: 75.79, days: 7 }),
+    );
+    expect(result.current.data?.place.name).toBe("Jaipur");
+    expect(result.current.data?.place.country).toBe("India");
+  });
+});

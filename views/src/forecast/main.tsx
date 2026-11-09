@@ -1,4 +1,4 @@
 import { mount } from "../shared/mount";
-import { PlaceholderApp } from "../shared/PlaceholderApp";
+import { ForecastApp } from "./ForecastApp";
 
-mount(<PlaceholderApp viewName="forecast" />);
+mount(<ForecastApp />);

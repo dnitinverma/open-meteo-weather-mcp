@@ -1,5 +1,5 @@
 // Registers the four ui:// view resources (single-file HTML built by views/).
-import { readFileSync } from "node:fs";
+import { readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { McpUiResourceMeta } from "@modelcontextprotocol/ext-apps";
@@ -59,14 +59,31 @@ export function loadViews(dir = defaultViewsDir()): ViewHtml {
   return out as ViewHtml;
 }
 
-let cached: ViewHtml | undefined;
-/** Views are read once per process. */
-export function getViews(): ViewHtml {
-  cached ??= loadViews();
-  return cached;
+let cached: { html: ViewHtml; stamp: string } | undefined;
+
+/** Modification times of the built views; changes when `npm run dev` rebuilds them. */
+function viewsStamp(dir: string): string {
+  return (Object.keys(VIEW_URIS) as ViewKey[])
+    .map((key) => {
+      try {
+        return statSync(path.join(dir, viewFileName(key))).mtimeMs;
+      } catch {
+        return 0;
+      }
+    })
+    .join(",");
 }
 
-export function registerViews(server: McpServer, views: ViewHtml = getViews()): void {
+/** Built views, re-read only when a file changes (so dev rebuilds show up without a restart). */
+export function getViews(): ViewHtml {
+  const dir = defaultViewsDir();
+  const stamp = viewsStamp(dir);
+  if (!cached || cached.stamp !== stamp) cached = { html: loadViews(dir), stamp };
+  return cached.html;
+}
+
+/** Registers the four views. Without `views`, each read serves the current build (getViews). */
+export function registerViews(server: McpServer, views?: ViewHtml): void {
   for (const key of Object.keys(VIEW_URIS) as ViewKey[]) {
     const uri = VIEW_URIS[key];
     registerAppResource(
@@ -80,7 +97,12 @@ export function registerViews(server: McpServer, views: ViewHtml = getViews()): 
       },
       async () => ({
         contents: [
-          { uri, mimeType: RESOURCE_MIME_TYPE, text: views[key], _meta: { ui: VIEW_UI_META } },
+          {
+            uri,
+            mimeType: RESOURCE_MIME_TYPE,
+            text: (views ?? getViews())[key],
+            _meta: { ui: VIEW_UI_META },
+          },
         ],
       }),
     );
