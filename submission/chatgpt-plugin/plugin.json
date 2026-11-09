@@ -1,0 +1,99 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "open-meteo-weather",
+  "version": "1.0.0",
+  "description": "Weather forecasts, current conditions, air quality and historical weather for any place, shown as interactive cards. Powered by Open-Meteo.com.",
+  "author": {
+    "name": "YOUR NAME",
+    "email": "support@example.com",
+    "url": "https://weather-mcp.yourdomain.com"
+  },
+  "homepage": "https://weather-mcp.yourdomain.com",
+  "license": "MIT",
+  "keywords": ["weather", "forecast", "air quality", "AQI", "rainfall", "temperature"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Open-Meteo Weather",
+        "shortDescription": "Forecasts, AQI and history",
+        "longDescription": "Ask about the weather for any city or coordinates and get an answer plus an interactive card. See a 1 to 16 day forecast with a temperature chart and hourly detail for any day, current conditions (temperature, feels-like, humidity, wind, precipitation), the current US air quality index with PM2.5 and PM10 and a daily AQI outlook, and past daily temperatures and rainfall for any period up to 366 days, charted by day or by month. Switch units, forecast length or chart type directly in the card. If a place name is ambiguous, such as Springfield, it asks which one you mean. Limitations: forecasts can be wrong, so check official sources for warnings; air-quality and history data come from models and reanalysis, not local sensors; very recent days may not be in the history archive yet. It is read-only, needs no sign-in, stores no personal data and is free for non-commercial use. Weather data by Open-Meteo.com.",
+        "developerName": "YOUR NAME",
+        "category": "Lifestyle",
+        "capabilities": [
+          "Weather forecast",
+          "Current weather",
+          "Air quality",
+          "Historical weather"
+        ],
+        "websiteURL": "https://weather-mcp.yourdomain.com",
+        "supportURL": "https://weather-mcp.yourdomain.com/support",
+        "privacyPolicyURL": "https://weather-mcp.yourdomain.com/privacy",
+        "termsOfServiceURL": "https://weather-mcp.yourdomain.com/terms",
+        "defaultPrompt": [
+          "Show me the 7-day forecast for Jaipur.",
+          "How bad is the air in Delhi today?",
+          "Chart the rain in Mumbai for July 2025."
+        ],
+        "brandColor": "#1D4ED8",
+        "brandColorDark": "#93C5FD",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Daily forecast with an interactive card",
+              "prompt": "Show me the 7-day forecast for Jaipur",
+              "tools_triggered": "get_forecast",
+              "expected_behavior": "A forecast card for Jaipur, Rajasthan, India with a 7-day list and temperature chart. Tapping the 16 days tab loads 16 days."
+            },
+            {
+              "description": "Current weather",
+              "prompt": "What's the weather in Noida right now?",
+              "tools_triggered": "get_current_weather",
+              "expected_behavior": "A current-weather card for Noida, Uttar Pradesh with temperature, feels-like, humidity, wind and precipitation. Refresh and the degrees C/F toggle work."
+            },
+            {
+              "description": "Air quality with a labelled gauge",
+              "prompt": "How bad is the air in Delhi today?",
+              "tools_triggered": "get_air_quality",
+              "expected_behavior": "An AQI gauge for Delhi showing the AQI number with its category printed (for example Unhealthy), plus PM2.5 and PM10. Next 3 days shows one chip per day."
+            },
+            {
+              "description": "Historical rainfall chart",
+              "prompt": "Chart the rain in Mumbai for July 2025",
+              "tools_triggered": "get_historical_weather",
+              "expected_behavior": "A history chart for Mumbai, 1 to 31 July 2025: daily rainfall bars and a totals row. The Temperature toggle switches to a max/min line chart."
+            },
+            {
+              "description": "Ambiguous place name",
+              "prompt": "Weather in Springfield",
+              "tools_triggered": "get_current_weather",
+              "expected_behavior": "No broken card: the assistant lists matching places (Missouri, Illinois, Massachusetts) and asks which one is meant."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unknown city: should report that no place was found and show no empty card, not guess a location",
+              "prompt": "Weather in Xyzabc"
+            },
+            {
+              "description": "Date range over 366 days: the history tool rejects it with a clear message instead of returning data",
+              "prompt": "Show the rainfall in Mumbai every day from 1 January 2023 to 31 December 2025"
+            },
+            {
+              "description": "Not a weather request: no tool should be called",
+              "prompt": "Book me a flight to Mumbai"
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "This plugin is free and does not sell products or process payments."
+      },
+      "publication": {
+        "release_notes": "Initial release: forecast, current weather, air quality and historical weather tools, each with an interactive card."
+      }
+    }
+  }
+}

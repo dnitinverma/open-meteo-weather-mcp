@@ -226,4 +226,13 @@ export function header(place: Place, what: string): string {
   return `${placeLabel(place)} — ${what}`;
 }
 
-export const READ_ONLY_ANNOTATIONS = { readOnlyHint: true, openWorldHint: true } as const;
+/**
+ * readOnlyHint: nothing is written anywhere. openWorldHint: results come from Open-Meteo, an external
+ * service. destructiveHint: false: no tool deletes or changes anything (OpenAI's directory requires
+ * all three to be explicit; justifications are in docs/listing.md).
+ */
+export const READ_ONLY_ANNOTATIONS = {
+  readOnlyHint: true,
+  openWorldHint: true,
+  destructiveHint: false,
+} as const;

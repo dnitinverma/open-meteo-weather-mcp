@@ -16,6 +16,8 @@ describe("config", () => {
       RATE_LIMIT_PER_MINUTE: 60,
       TRUST_PROXY: 0,
       ALLOWED_HOSTS: [],
+      SUPPORT_EMAIL: "support@example.com",
+      OPENAI_APPS_CHALLENGE: "",
     });
   });
   it("coerces numbers from strings", () => {
@@ -31,6 +33,15 @@ describe("config", () => {
       ALLOWED_HOSTS: ["a.example.com", "b.example.com"],
       TRUST_PROXY: 1,
     });
+  });
+  it("validates SUPPORT_EMAIL and OPENAI_APPS_CHALLENGE", () => {
+    expect(loadConfig({ OPENAI_APPS_CHALLENGE: "  abc-123_XYZ  " }).OPENAI_APPS_CHALLENGE).toBe(
+      "abc-123_XYZ",
+    );
+    expect(() => loadConfig({ SUPPORT_EMAIL: "not-an-email" })).toThrow(/SUPPORT_EMAIL/);
+    expect(() => loadConfig({ OPENAI_APPS_CHALLENGE: "has space" })).toThrow(
+      /OPENAI_APPS_CHALLENGE/,
+    );
   });
   it("rejects invalid values with a readable message", () => {
     expect(() => loadConfig({ PORT: "abc" })).toThrow(/Invalid environment configuration — PORT/);

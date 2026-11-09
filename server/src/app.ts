@@ -6,6 +6,7 @@ import type { ErrorRequestHandler, Express, Request, RequestHandler, Response } 
 import { config } from "./config.js";
 import { requestContext } from "./context.js";
 import { logger } from "./logger.js";
+import { registerPages } from "./pages.js";
 import { createRateLimiter } from "./rateLimit.js";
 import { createServer } from "./server.js";
 import { VERSION } from "./version.js";
@@ -16,14 +17,17 @@ export interface AppOptions {
   rateLimitPerMinute?: number;
   trustProxy?: number;
   allowedHosts?: string[];
-  /** Registers extra routes (e.g. static pages) before the 404 handler. */
+  supportEmail?: string;
+  /** OpenAI domain-verification token ("" = no challenge route). */
+  challenge?: string;
+  /** Registers extra routes before the 404 handler. */
   routes?: (app: Express) => void;
 }
 
 const rpcError = (res: Response, status: number, message: string) =>
   res.status(status).json({ jsonrpc: "2.0", error: { code: -32000, message }, id: null });
 
-/** Express app: POST /mcp (Streamable HTTP, stateless) and GET /health. Everything else is 404. */
+/** Express app: POST /mcp (Streamable HTTP, stateless), GET /health and the static pages. Everything else is 404. */
 export function createApp(options: AppOptions = {}): Express {
   const {
     rateLimitPerMinute = config.RATE_LIMIT_PER_MINUTE,
@@ -31,6 +35,10 @@ export function createApp(options: AppOptions = {}): Express {
     allowedHosts = config.ALLOWED_HOSTS,
     routes,
   } = options;
+  const pagesOptions = {
+    ...(options.supportEmail !== undefined ? { supportEmail: options.supportEmail } : {}),
+    ...(options.challenge !== undefined ? { challenge: options.challenge } : {}),
+  };
 
   // Binds all interfaces for hosting; Host-header validation is applied when ALLOWED_HOSTS is set.
   const app = createMcpExpressApp({
@@ -95,6 +103,7 @@ export function createApp(options: AppOptions = {}): Express {
   app.get("/mcp", methodNotAllowed);
   app.delete("/mcp", methodNotAllowed);
 
+  registerPages(app, pagesOptions);
   routes?.(app);
 
   // Anything else is a 404.

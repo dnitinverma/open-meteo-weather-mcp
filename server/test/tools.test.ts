@@ -70,7 +70,11 @@ describe("tools/list", () => {
     for (const t of tools) {
       expect(t.description).toBe(DESCRIPTIONS[t.name]);
       expect(t.title).toBeTruthy();
-      expect(t.annotations).toMatchObject({ readOnlyHint: true, openWorldHint: true });
+      expect(t.annotations).toMatchObject({
+        readOnlyHint: true,
+        openWorldHint: true,
+        destructiveHint: false,
+      });
       const props = (t.inputSchema as { properties: Record<string, { description?: string }> })
         .properties;
       for (const [key, prop] of Object.entries(props)) {

@@ -113,7 +113,6 @@ describe("request limits and routing", () => {
   it.each([
     ["GET", "/nope"],
     ["POST", "/nope"],
-    ["GET", "/"],
     ["PUT", "/mcp"],
     ["GET", "/.env"],
   ])("%s %s → 404", async (method, path) => {
