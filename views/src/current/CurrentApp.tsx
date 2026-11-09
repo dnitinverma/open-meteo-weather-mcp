@@ -7,6 +7,7 @@ import {
 } from "@weather/shared";
 import { useRef } from "react";
 import { useWeatherApp } from "../shared/useWeatherApp";
+import { skyForWeather } from "../shared/sky";
 import { ViewShell } from "../shared/ViewShell";
 import { CurrentContent } from "./CurrentContent";
 
@@ -25,6 +26,7 @@ export function CurrentApp() {
   return (
     <ViewShell
       state={state}
+      sky={(d) => skyForWeather(d.weather_code, d.is_day)}
       onPickPlace={(p) => request(p, units.current)}
       render={(data) => (
         <CurrentContent

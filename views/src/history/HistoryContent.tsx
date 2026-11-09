@@ -15,7 +15,7 @@ export function HistoryContent({ data }: { data: HistoricalResult }) {
     <div className="hc">
       <Header
         place={data.place}
-        subtitle={`${longDate(data.start_date)} – ${longDate(data.end_date)} · ${n} day${n === 1 ? "" : "s"}`}
+        subtitle={`${longDate(data.start_date)} to ${longDate(data.end_date)}, ${n} day${n === 1 ? "" : "s"}`}
       />
       <Tabs<HistoryMode>
         label="Chart"
@@ -43,7 +43,7 @@ export function HistoryContent({ data }: { data: HistoricalResult }) {
         )}
       </p>
       <HistoryChart buckets={buckets} monthly={monthly} mode={mode} units={u} />
-      <dl className="hc-totals">
+      <dl className="wx-facts">
         <div>
           <dt>Total rain</dt>
           <dd>{formatPrecip(data.totals.precipitation_sum, u)}</dd>

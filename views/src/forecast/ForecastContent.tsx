@@ -1,5 +1,5 @@
 import type { ForecastDay, ForecastResult, Units } from "@weather/shared";
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Header, Tabs, UnitToggle, WeatherIcon } from "../shared/components";
 import {
   formatPercent,
@@ -81,9 +81,13 @@ export function ForecastContent({
         onChange={(n) => onRequest({ days: n, units })}
       />
       <TempChart days={days} units={units} />
-      <ul className="fc-days" aria-label="Daily forecast">
-        {days.map((d) => (
-          <li key={d.date}>
+      <ul
+        className="fc-days"
+        aria-label="Daily forecast"
+        key={`${days.length}-${units}-${days[0]?.date ?? ""}`}
+      >
+        {days.map((d, i) => (
+          <li key={d.date} style={{ "--i": i } as CSSProperties}>
             <DayRow
               day={d}
               units={units}
@@ -101,7 +105,7 @@ export function ForecastContent({
           aria-label={`Hourly forecast for ${weekday(hourly.date)} ${shortDate(hourly.date)}`}
         >
           <h2 className="fc-hourly-title">
-            Hourly · {weekday(hourly.date)} {shortDate(hourly.date)}
+            Hour by hour on {weekday(hourly.date)} {shortDate(hourly.date)}
           </h2>
           <ol className="fc-hours" tabIndex={0}>
             {hourly.hours.map((h) => (

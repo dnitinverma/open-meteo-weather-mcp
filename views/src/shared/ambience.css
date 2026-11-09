@@ -1,0 +1,221 @@
+/*
+ * Ambient weather behind the card's content. Decorative only: aria-hidden, pointer-events none,
+ * transform/opacity animations, faded toward the bottom so text-heavy areas stay calm.
+ * Colours are theme-aware (light-dark) and inherit the card's color-scheme, so "night" is dusk.
+ */
+.amb {
+  --amb-sun: light-dark(rgb(255 205 90 / 0.6), rgb(170 190 255 / 0.22));
+  --amb-dim: light-dark(rgb(255 255 255 / 0.55), rgb(255 235 200 / 0.12));
+  --amb-moon: rgb(210 224 255 / 0.3);
+  --amb-cloud: light-dark(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.07));
+  --amb-cloud-dark: light-dark(rgb(90 110 140 / 0.2), rgb(255 255 255 / 0.06));
+  --amb-fog: light-dark(rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.07));
+  --amb-rain: light-dark(rgb(31 90 153 / 0.55), rgb(170 208 255 / 0.5));
+  --amb-snow: light-dark(rgb(255 255 255 / 1), rgb(255 255 255 / 0.65));
+  --amb-snow-edge: light-dark(rgb(70 100 140 / 0.35), rgb(255 255 255 / 0));
+  --amb-star: light-dark(rgb(255 255 255 / 0), rgb(255 255 255 / 0.9));
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  container-type: size;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  animation: wx-fade-in 1s ease-out both;
+}
+.amb-layer {
+  position: absolute;
+  inset: 0;
+}
+.amb i {
+  position: absolute;
+  display: block;
+}
+
+/* ---------- sun / moon glow ---------- */
+.amb-glow {
+  position: absolute;
+  top: -70px;
+  right: -50px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  animation: amb-breathe 7s ease-in-out infinite;
+}
+.amb-glow-sun {
+  background: radial-gradient(closest-side, var(--amb-sun), transparent);
+}
+.amb-glow-dim {
+  background: radial-gradient(closest-side, var(--amb-dim), transparent);
+}
+.amb-glow-moon {
+  background: radial-gradient(closest-side, var(--amb-moon), transparent);
+}
+@keyframes amb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* ---------- stars ---------- */
+.amb-stars i {
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--r) * 2px);
+  height: calc(var(--r) * 2px);
+  border-radius: 50%;
+  background: var(--amb-star);
+  animation: amb-twinkle calc(3s + var(--d) * 4s) ease-in-out infinite;
+  animation-delay: calc(var(--d) * -6s);
+}
+@keyframes amb-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------- clouds and fog drift sideways ---------- */
+.amb-clouds i {
+  top: var(--y);
+  left: -40%;
+  width: var(--w);
+  height: calc(var(--w) * 0.3);
+  border-radius: 999px;
+  background: var(--amb-cloud);
+  filter: blur(12px);
+  animation: amb-drift var(--s) linear infinite;
+  animation-delay: calc(var(--d) * var(--s) * -1);
+}
+.amb-fog i {
+  top: var(--y);
+  left: -60%;
+  width: 80%;
+  height: var(--h);
+  border-radius: 999px;
+  background: var(--amb-fog);
+  filter: blur(22px);
+  animation: amb-drift var(--s) linear infinite;
+  animation-delay: calc(var(--d) * var(--s) * -1);
+}
+@keyframes amb-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(700px, 0, 0);
+    transform: translate3d(calc(100cqw + 90%), 0, 0);
+  }
+}
+
+/* ---------- rain ---------- */
+.amb-rain i {
+  top: -40px;
+  left: var(--x);
+  width: 2px;
+  height: var(--l);
+  border-radius: 1px;
+  background: linear-gradient(180deg, transparent, var(--amb-rain));
+  animation: amb-fall var(--s) linear infinite;
+  animation-delay: calc(var(--d) * var(--s) * -1);
+}
+@keyframes amb-fall {
+  from {
+    transform: translate3d(0, 0, 0) rotate(12deg);
+  }
+  to {
+    transform: translate3d(-40px, 520px, 0) rotate(12deg);
+    transform: translate3d(-40px, 115cqh, 0) rotate(12deg);
+  }
+}
+
+/* ---------- snow ---------- */
+.amb-snow i {
+  top: -12px;
+  left: var(--x);
+  width: var(--z);
+  height: var(--z);
+  border-radius: 50%;
+  background: var(--amb-snow);
+  box-shadow: 0 0 0 1px var(--amb-snow-edge);
+  animation: amb-flutter var(--s) linear infinite;
+  animation-delay: calc(var(--d) * var(--s) * -1);
+}
+@keyframes amb-flutter {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  33% {
+    transform: translate3d(14px, 170px, 0);
+    transform: translate3d(14px, 35cqh, 0);
+  }
+  66% {
+    transform: translate3d(-10px, 340px, 0);
+    transform: translate3d(-10px, 70cqh, 0);
+  }
+  100% {
+    transform: translate3d(6px, 520px, 0);
+    transform: translate3d(6px, 115cqh, 0);
+  }
+}
+
+/* ---------- lightning: two brief, gentle flashes every few seconds ---------- */
+.amb-flash {
+  background: rgb(255 255 255 / 1);
+  opacity: 0;
+  animation: amb-lightning 9s linear infinite;
+}
+@keyframes amb-lightning {
+  0%,
+  91%,
+  100% {
+    opacity: 0;
+  }
+  92% {
+    opacity: 0.3;
+  }
+  93.5% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 0.18;
+  }
+  97% {
+    opacity: 0;
+  }
+}
+
+@keyframes wx-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Reduced motion: keep the calm glow, drop everything that moves or flashes. */
+@media (prefers-reduced-motion: reduce) {
+  .amb-rain,
+  .amb-snow,
+  .amb-clouds,
+  .amb-fog,
+  .amb-flash {
+    display: none;
+  }
+  .amb,
+  .amb-glow,
+  .amb-stars i {
+    animation: none;
+  }
+}

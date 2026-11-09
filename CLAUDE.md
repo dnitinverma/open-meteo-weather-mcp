@@ -62,3 +62,4 @@ Full plan: `docs/BUILD_PLAN.md` (phases, data contracts, done-when checks).
 - `registerTool` takes `inputSchema: z.object({...})` (raw shapes are deprecated in v2).
 - TypeScript 6: `@types/*` aren't auto-included; `server/tsconfig.json` sets `"types": ["node"]`.
 - Logs go to stderr (pino) so stdout stays clean for `--stdio`.
+- Views: every card is a sky (`views/src/shared/sky.ts`: palette, which sky for which data, temperature colour scale). Ambient weather lives in `SkyAmbience.tsx` / `ambience.css`. Any colour change must keep `views/test/sky.test.ts` green (contrast against every sky, both themes), and every animation must stop under `prefers-reduced-motion`.

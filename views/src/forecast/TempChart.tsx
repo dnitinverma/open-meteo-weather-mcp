@@ -1,5 +1,7 @@
 import type { ForecastDay, Units } from "@weather/shared";
 import { formatTemp, weekday } from "../shared/format";
+import type { CSSProperties } from "react";
+import { TempGradient, useGradientId } from "../shared/TempGradient";
 import { useWidth } from "../shared/useWidth";
 
 const H = 150;
@@ -8,6 +10,7 @@ const PAD = { top: 22, right: 34, bottom: 24, left: 34 };
 /** Inline SVG line chart: max (solid) and min (dashed) per day, labels at first and last points. */
 export function TempChart({ days, units }: { days: ForecastDay[]; units: Units }) {
   const [ref, W] = useWidth<HTMLDivElement>();
+  const gradient = useGradientId("fc-temp");
   if (days.length === 0) return null;
   const maxes = days.map((d) => d.temp_max);
   const mins = days.map((d) => d.temp_min);
@@ -29,6 +32,7 @@ export function TempChart({ days, units }: { days: ForecastDay[]; units: Units }
   return (
     <div ref={ref} className="fc-chart-wrap">
       <svg
+        key={`${days.length}-${units}-${days[0]?.date ?? ""}`}
         className="fc-chart"
         width={W}
         height={H}
@@ -37,12 +41,40 @@ export function TempChart({ days, units }: { days: ForecastDay[]; units: Units }
         aria-label={summary}
       >
         <title>{summary}</title>
-        <path d={path(maxes)} className="fc-line-max" fill="none" />
-        <path d={path(mins)} className="fc-line-min" fill="none" />
+        <TempGradient
+          id={gradient}
+          y1={PAD.top}
+          y2={PAD.top + innerH}
+          topTemp={hi}
+          bottomTemp={hi - span}
+          units={units}
+        />
+        <path
+          d={path(maxes)}
+          className="fc-line-max"
+          pathLength={1}
+          stroke={`url(#${gradient})`}
+          fill="none"
+        />
+        <path d={path(mins)} className="fc-line-min" stroke={`url(#${gradient})`} fill="none" />
         {days.map((d, i) => (
           <g key={d.date}>
-            <circle cx={x(i)} cy={y(d.temp_max)} r={2.5} className="fc-dot-max" />
-            <circle cx={x(i)} cy={y(d.temp_min)} r={2.5} className="fc-dot-min" />
+            <circle
+              cx={x(i)}
+              cy={y(d.temp_max)}
+              r={3}
+              className="fc-dot"
+              style={{ "--i": i } as CSSProperties}
+              fill={`url(#${gradient})`}
+            />
+            <circle
+              cx={x(i)}
+              cy={y(d.temp_min)}
+              r={3}
+              className="fc-dot"
+              style={{ "--i": i } as CSSProperties}
+              fill={`url(#${gradient})`}
+            />
             {i % labelEvery === 0 && (
               <text x={x(i)} y={H - 6} textAnchor="middle" className="fc-axis">
                 {weekday(d.date)}
@@ -59,20 +91,10 @@ export function TempChart({ days, units }: { days: ForecastDay[]; units: Units }
             const dx = days.length === 1 ? 0 : i === 0 ? -6 : 6;
             return (
               <g key={`labels-${i}`}>
-                <text
-                  x={x(i) + dx}
-                  y={y(d.temp_max) + 4}
-                  textAnchor={anchor}
-                  className="fc-val fc-val-max"
-                >
+                <text x={x(i) + dx} y={y(d.temp_max) + 4} textAnchor={anchor} className="fc-val">
                   {formatTemp(d.temp_max, units)}
                 </text>
-                <text
-                  x={x(i) + dx}
-                  y={y(d.temp_min) + 4}
-                  textAnchor={anchor}
-                  className="fc-val fc-val-min"
-                >
+                <text x={x(i) + dx} y={y(d.temp_min) + 4} textAnchor={anchor} className="fc-val">
                   {formatTemp(d.temp_min, units)}
                 </text>
               </g>

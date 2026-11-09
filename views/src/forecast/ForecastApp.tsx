@@ -1,5 +1,6 @@
 import { forecastResultSchema, TOOL_NAMES, type ForecastResult, type Place } from "@weather/shared";
 import { useRef } from "react";
+import { skyForWeather } from "../shared/sky";
 import { useWeatherApp } from "../shared/useWeatherApp";
 import { ViewShell } from "../shared/ViewShell";
 import { ForecastContent, type ForecastRequest } from "./ForecastContent";
@@ -23,6 +24,11 @@ export function ForecastApp() {
   return (
     <ViewShell
       state={state}
+      sky={(d) => {
+        // The sky of the day you are looking at: the selected day, else the first.
+        const day = d.days.find((x) => x.date === d.hourly?.date) ?? d.days[0];
+        return skyForWeather(day?.weather_code ?? 0, true);
+      }}
       onPickPlace={(p) => request(p, last.current)}
       render={(data) => (
         <ForecastContent

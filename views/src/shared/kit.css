@@ -1,38 +1,39 @@
 /*
- * Theme: host style variables (MCP Apps) with light-dark() fallbacks that follow
- * prefers-color-scheme. Components use only --wx-* tokens; never hard-coded text colours.
- * Fallback palette contrast (text on bg): light 16:1 / muted 7.7:1; dark 15:1 / muted 7.4:1.
+ * "The card is the sky it describes."
+ * Every card paints a sky gradient chosen from its own data (see sky.ts) and sets its text on it in
+ * ink colours that are contrast-tested against every sky (views/test/sky.test.ts). Colours are not
+ * taken from the host: text must sit on our own ground. Hosts still choose light or dark, which we
+ * follow through color-scheme / light-dark().
+ *
+ * Type: a system serif (New York on Apple, Georgia or Palatino elsewhere) for the big numerals and
+ * place names, the system UI face for everything else. No network fonts: views load nothing.
  */
+/* Registered as colours so the sky cross-fades when the data (and so the weather) changes. */
+@property --sky-top {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d6e8f8;
+}
+@property --sky-bottom {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2f8fd;
+}
+
 :root {
   color-scheme: light dark;
-  --wx-bg: var(--color-background-primary, light-dark(#ffffff, #1c1c1f));
-  --wx-bg-subtle: var(--color-background-secondary, light-dark(#f4f4f5, #27272a));
-  --wx-bg-highlight: var(--color-background-info, light-dark(#eff6ff, #172554));
-  --wx-text: var(--color-text-primary, light-dark(#18181b, #f4f4f5));
-  --wx-text-muted: var(--color-text-secondary, light-dark(#52525b, #a1a1aa));
-  --wx-text-danger: var(--color-text-danger, light-dark(#b91c1c, #fca5a5));
-  --wx-border: var(--color-border-primary, light-dark(#d4d4d8, #3f3f46));
-  --wx-ring: var(--color-ring-primary, light-dark(#2563eb, #93c5fd));
-  --wx-accent: light-dark(#1d4ed8, #93c5fd);
-  --wx-accent-text: light-dark(#ffffff, #0b1220);
-  --wx-max: light-dark(#c2410c, #fdba74);
-  --wx-min: light-dark(#1d4ed8, #93c5fd);
-  --wx-rain: light-dark(#0369a1, #7dd3fc);
-  --wx-night-bg: light-dark(#e0e7ff, #1e1b4b);
-  --wx-radius: var(--border-radius-lg, 12px);
-  --wx-radius-sm: var(--border-radius-sm, 6px);
-  --wx-font: var(
-    --font-sans,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    Roboto,
-    "Helvetica Neue",
-    Arial,
-    sans-serif
-  );
-  --wx-text-sm: 13px;
-  --wx-text-md: 14px;
+  --ink: light-dark(#172033, #e8eefc);
+  --ink-muted: light-dark(#2f3b52, #b7c3e0);
+  --wash: light-dark(rgb(23 32 51 / 0.07), rgb(232 238 252 / 0.1));
+  --wash-strong: light-dark(rgb(23 32 51 / 0.13), rgb(232 238 252 / 0.18));
+  --track: light-dark(rgb(23 32 51 / 0.16), rgb(232 238 252 / 0.22));
+  --rain: light-dark(#1f5a99, #8cb8f2);
+  --focus: light-dark(#1b4f9c, #a9c7ff);
+  --sky-top: light-dark(#d6e8f8, #1b2440);
+  --sky-bottom: light-dark(#f2f8fd, #2b3a63);
+  --font-display:
+    ui-serif, "New York", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .wx-theme-light {
@@ -50,40 +51,109 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--wx-bg);
-  color: var(--wx-text);
-  font-family: var(--wx-font);
-  font-size: var(--wx-text-md);
-  line-height: 1.4;
+  background: var(--sky-top);
+  color: var(--ink);
+  font: 14px/1.45 var(--font-ui);
 }
-
 body {
   overflow-x: hidden;
 }
-
 button {
   font: inherit;
   color: inherit;
 }
-
 :focus-visible {
-  outline: 2px solid var(--wx-ring);
+  outline: 2px solid var(--focus);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
+/* ---------- the card: a sky ---------- */
 .wx-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   min-width: 300px;
+  padding: 20px 20px 14px;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+  transition:
+    --sky-top 0.9s ease,
+    --sky-bottom 0.9s ease;
+  /* The sky comes up when the card first appears. */
+  animation: wx-dawn 0.7s ease-out both;
+}
+/* Night is dusk in every theme, so its text must switch to the pale ink too. */
+.wx-card[data-sky="night"] {
+  color-scheme: dark;
+}
+.wx-inner {
+  position: relative;
+  z-index: 1;
   max-width: 600px;
-  margin: 0 auto;
-  padding: 14px 16px 10px;
-  background: var(--wx-bg);
-  color: var(--wx-text);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
+}
+@keyframes wx-dawn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wx-card {
+    animation: none;
+  }
+}
+@media (max-width: 420px) {
+  .wx-card {
+    padding: 16px 16px 12px;
+  }
 }
 
+/* Shared motion vocabulary: things rise in, lines draw, dots pop, and values fade up. */
+@keyframes wx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes wx-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes wx-pop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes wx-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- header ---------- */
 .wx-header {
   display: flex;
   align-items: flex-start;
@@ -91,61 +161,81 @@ button {
   gap: 12px;
 }
 .wx-header h1 {
-  font-size: 18px;
-  font-weight: var(--font-weight-semibold, 600);
   margin: 0;
-  line-height: 1.25;
+  font: 500 22px/1.2 var(--font-display);
+  letter-spacing: -0.005em;
 }
-.wx-header .wx-sub {
-  font-size: var(--wx-text-sm);
-  color: var(--wx-text-muted);
-  margin: 2px 0 0;
+.wx-sub {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: var(--ink-muted);
 }
 
-.wx-seg {
+/* ---------- tabs: words with an underline, no boxes ---------- */
+.wx-tabs {
   display: inline-flex;
-  border: 1px solid var(--wx-border);
-  border-radius: var(--wx-radius-sm);
-  overflow: hidden;
-  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 4px 20px;
   align-self: flex-start;
 }
-.wx-seg button {
-  background: transparent;
+.wx-tabs button {
+  position: relative;
+  min-height: 32px;
+  padding: 5px 0 4px;
+  background: none;
   border: 0;
-  padding: 5px 11px;
-  font-size: var(--wx-text-sm);
+  border-radius: 0;
+  color: var(--ink-muted);
   cursor: pointer;
-  min-height: 30px;
+  transition:
+    color 0.2s ease,
+    transform 0.12s ease;
 }
-.wx-seg button + button {
-  border-left: 1px solid var(--wx-border);
+.wx-tabs button::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s cubic-bezier(0.3, 0.9, 0.3, 1);
 }
-.wx-seg button[aria-pressed="true"] {
-  background: var(--wx-accent);
-  color: var(--wx-accent-text);
-  font-weight: var(--font-weight-semibold, 600);
+.wx-tabs button:hover:not(:disabled) {
+  color: var(--ink);
 }
-.wx-seg button:disabled {
+.wx-tabs button[aria-pressed="true"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+.wx-tabs button[aria-pressed="true"]::after {
+  transform: scaleX(1);
+}
+.wx-tabs button:disabled {
   cursor: progress;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
+/* ---------- buttons: soft pills ---------- */
 .wx-btn {
-  background: var(--wx-bg-subtle);
-  border: 1px solid var(--wx-border);
-  border-radius: var(--wx-radius-sm);
-  padding: 6px 12px;
-  font-size: var(--wx-text-sm);
+  padding: 6px 16px;
+  background: var(--wash);
+  border: 0;
+  border-radius: 999px;
   cursor: pointer;
   text-align: left;
+  transition:
+    background 0.2s ease,
+    transform 0.12s ease;
 }
-.wx-btn:hover {
-  border-color: var(--wx-ring);
+.wx-btn:hover:not(:disabled) {
+  background: var(--wash-strong);
 }
 .wx-btn:disabled {
   cursor: progress;
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
 .wx-icon {
@@ -153,19 +243,45 @@ button {
   line-height: 1;
 }
 
+/* Press feedback: controls dip slightly under a finger or click. */
+.wx-btn:active:not(:disabled),
+.wx-tabs button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* A soft sheen follows the pointer across the sky (mouse and pen only). */
+.wx-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    280px circle at var(--px, 85%) var(--py, 10%),
+    rgb(255 255 255 / 0.2),
+    transparent 70%
+  );
+  transition: opacity 0.4s ease;
+}
+@media (hover: hover) {
+  .wx-card:hover .wx-sheen {
+    opacity: 1;
+  }
+}
+
+/* ---------- loading and errors ---------- */
 .wx-status {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--wx-text-muted);
-  font-size: var(--wx-text-sm);
-  padding: 16px 0;
+  gap: 10px;
+  padding: 24px 0;
+  color: var(--ink-muted);
 }
 .wx-spinner {
   width: 14px;
   height: 14px;
-  border: 2px solid var(--wx-border);
-  border-top-color: var(--wx-accent);
+  border: 2px solid var(--track);
+  border-top-color: var(--ink);
   border-radius: 50%;
   animation: wx-spin 0.8s linear infinite;
 }
@@ -179,7 +295,6 @@ button {
     animation: none;
   }
 }
-
 .wx-error {
   display: flex;
   flex-direction: column;
@@ -190,33 +305,35 @@ button {
   margin: 0;
 }
 .wx-error .wx-error-title {
-  color: var(--wx-text-danger);
-  font-weight: var(--font-weight-semibold, 600);
+  font: 500 20px/1.25 var(--font-display);
 }
 .wx-error ul {
   list-style: none;
-  margin: 0;
+  margin: 4px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-start;
+  gap: 8px;
 }
 
+/* ---------- footer ---------- */
 .wx-footer {
-  border-top: 1px solid var(--wx-border);
-  padding-top: 8px;
-  font-size: var(--wx-text-sm);
-  color: var(--wx-text-muted);
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--ink-muted);
 }
 .wx-footer a {
-  color: var(--wx-text-muted);
+  color: inherit;
+  text-underline-offset: 3px;
 }
 
+/* ---------- small helpers ---------- */
 .wx-muted {
-  color: var(--wx-text-muted);
+  color: var(--ink-muted);
 }
 .wx-small {
-  font-size: var(--wx-text-sm);
+  font-size: 13px;
 }
 .wx-visually-hidden {
   position: absolute;
@@ -225,4 +342,45 @@ button {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+/* A row of plain facts: value first, label below. DOM order stays label, value for screen readers. */
+.wx-facts {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+}
+.wx-facts > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+}
+.wx-facts dt {
+  font-size: 13px;
+  color: var(--ink-muted);
+}
+.wx-facts dd {
+  margin: 0;
+  font: 500 19px/1.3 var(--font-display);
+  white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .wx-facts dd {
+    font-size: 17px;
+  }
+}
+
+/* People who ask for reduced motion get a still card: no drifting weather, no counting, no
+   sliding. State changes still happen, instantly. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

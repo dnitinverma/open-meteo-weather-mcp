@@ -1,6 +1,7 @@
 import type { Units } from "@weather/shared";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { formatPrecip, formatTemp, monthLabel, shortDate } from "../shared/format";
+import { TempGradient, useGradientId } from "../shared/TempGradient";
 import { useWidth } from "../shared/useWidth";
 import { labelStep, type Bucket } from "./aggregate";
 
@@ -27,6 +28,7 @@ export function HistoryChart({
   units: Units;
 }) {
   const [ref, W] = useWidth<HTMLDivElement>();
+  const gradient = useGradientId("hc-temp");
   // Room for the longest y-axis label (~7.5 px per character at 13 px) so it is never clipped.
   const maxLabel =
     mode === "rain"
@@ -57,6 +59,7 @@ export function HistoryChart({
           <rect
             key={b.key}
             className="hc-bar"
+            style={{ "--i": i } as CSSProperties}
             x={xMid(i) - barW / 2}
             y={y(b.precipitation)}
             width={barW}
@@ -85,8 +88,27 @@ export function HistoryChart({
     summary = `${monthly ? "Monthly average" : "Daily"} temperature line chart: highs up to ${formatTemp(hi, units)}, lows down to ${formatTemp(lo, units)}.`;
     body = (
       <>
-        <path d={path(buckets.map((b) => b.temp_max))} className="hc-line-max" fill="none" />
-        <path d={path(buckets.map((b) => b.temp_min))} className="hc-line-min" fill="none" />
+        <TempGradient
+          id={gradient}
+          y1={PAD.top}
+          y2={PAD.top + innerH}
+          topTemp={top}
+          bottomTemp={bottom}
+          units={units}
+        />
+        <path
+          d={path(buckets.map((b) => b.temp_max))}
+          className="hc-line-max"
+          pathLength={1}
+          stroke={`url(#${gradient})`}
+          fill="none"
+        />
+        <path
+          d={path(buckets.map((b) => b.temp_min))}
+          className="hc-line-min"
+          stroke={`url(#${gradient})`}
+          fill="none"
+        />
       </>
     );
   }
@@ -94,6 +116,7 @@ export function HistoryChart({
   return (
     <div ref={ref} className="hc-wrap">
       <svg
+        key={`${mode}-${buckets.length}-${units}-${buckets[0]?.key ?? ""}`}
         width={W}
         height={H}
         viewBox={`0 0 ${W} ${H}`}

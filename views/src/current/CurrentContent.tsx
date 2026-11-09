@@ -1,4 +1,5 @@
 import type { CurrentWeatherResult, Units } from "@weather/shared";
+import { AnimatedNumber } from "../shared/AnimatedNumber";
 import { Header, UnitToggle, WeatherIcon } from "../shared/components";
 import {
   clockTime,
@@ -7,6 +8,7 @@ import {
   formatSpeed,
   formatTemp,
   shortDate,
+  unitSymbols,
 } from "../shared/format";
 import "./current.css";
 
@@ -28,20 +30,24 @@ export function CurrentContent({
     <div className={`cw ${data.is_day ? "cw-day" : "cw-night"}`} aria-busy={loading}>
       <Header
         place={data.place}
-        subtitle={data.is_day ? "Current weather" : "Current weather · night"}
         right={
           <UnitToggle units={u} disabled={loading} onChange={(units) => onRequest({ units })} />
         }
       />
       <div className="cw-main">
-        <WeatherIcon code={data.weather_code} isDay={data.is_day} size={56} />
+        <WeatherIcon code={data.weather_code} isDay={data.is_day} size={52} />
         <div>
-          <p className="cw-temp">{formatTemp(data.temperature, u)}</p>
+          <p className="cw-temp">
+            <span className="cw-num">
+              <AnimatedNumber value={data.temperature} />
+            </span>
+            <span className="cw-unit">{unitSymbols(u).temp}</span>
+          </p>
           <p className="cw-cond">{data.condition}</p>
-          <p className="wx-small wx-muted">Feels like {formatTemp(data.apparent_temperature, u)}</p>
+          <p className="wx-muted">Feels like {formatTemp(data.apparent_temperature, u)}</p>
         </div>
       </div>
-      <dl className="cw-stats">
+      <dl className="wx-facts">
         <div>
           <dt>Humidity</dt>
           <dd>{Math.round(data.humidity)}%</dd>

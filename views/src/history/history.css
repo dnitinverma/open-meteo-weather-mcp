@@ -1,26 +1,22 @@
 .hc {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 .hc-legend {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .hc-key {
   display: inline-block;
-  width: 18px;
+  width: 20px;
   height: 0;
-  border-top: 2px solid;
-}
-.hc-key-max {
-  border-color: var(--wx-max);
+  border-top: 3px solid var(--ink);
 }
 .hc-key-min {
-  border-color: var(--wx-min);
-  border-top-style: dashed;
+  border-top-style: dotted;
 }
 .hc-wrap {
   width: 100%;
@@ -29,41 +25,40 @@
   display: block;
 }
 .hc-bar {
-  fill: var(--wx-rain);
+  fill: var(--rain);
+  rx: 2px;
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: hc-grow 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 14ms);
+}
+@keyframes hc-grow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.hc-line-max,
+.hc-line-min {
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .hc-line-max {
-  stroke: var(--wx-max);
-  stroke-width: 2;
+  stroke-dasharray: 1;
+  animation: wx-draw 1s cubic-bezier(0.3, 0.7, 0.2, 1) both;
 }
 .hc-line-min {
-  stroke: var(--wx-min);
-  stroke-width: 2;
-  stroke-dasharray: 5 4;
+  stroke-dasharray: 2 6;
+  animation: wx-fade 0.7s ease-out 0.5s both;
 }
 .hc-grid {
-  stroke: var(--wx-border);
+  stroke: var(--track);
   stroke-width: 1;
 }
 .hc-axis {
-  fill: var(--wx-text-muted);
+  fill: var(--ink-muted);
   font-size: 13px;
-}
-.hc-totals {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 0;
-}
-.hc-totals > div {
-  background: var(--wx-bg-subtle);
-  border-radius: var(--wx-radius-sm);
-  padding: 8px 10px;
-}
-.hc-totals dt {
-  font-size: var(--wx-text-sm);
-  color: var(--wx-text-muted);
-}
-.hc-totals dd {
-  margin: 2px 0 0;
-  font-weight: var(--font-weight-semibold, 600);
 }

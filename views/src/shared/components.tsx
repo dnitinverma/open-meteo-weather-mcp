@@ -1,11 +1,43 @@
 import { ATTRIBUTION, describeWeatherCode, type Place, type Units } from "@weather/shared";
-import type { MouseEvent, ReactNode } from "react";
+import { useRef, type MouseEvent, type PointerEvent, type ReactNode } from "react";
 import { useAppInstance } from "./AppContext";
 import { placeLabel } from "./format";
+import { SkyAmbience } from "./SkyAmbience";
+import { skyStyle, type SkyName } from "./sky";
 import type { ViewError } from "./useWeatherApp";
 
-export function Card({ children, className }: { children: ReactNode; className?: string }) {
-  return <section className={["wx-card", className].filter(Boolean).join(" ")}>{children}</section>;
+/** The card is a sky: `sky` picks its ground and the weather drifting in it (see sky.ts). */
+export function Card({
+  children,
+  className,
+  sky = "clear",
+}: {
+  children: ReactNode;
+  className?: string;
+  sky?: SkyName;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  // The sheen follows the pointer; touch has no hover, so it is ignored there.
+  const onPointerMove = (e: PointerEvent<HTMLElement>) => {
+    const el = ref.current;
+    if (!el || e.pointerType === "touch") return;
+    const box = el.getBoundingClientRect();
+    el.style.setProperty("--px", `${e.clientX - box.left}px`);
+    el.style.setProperty("--py", `${e.clientY - box.top}px`);
+  };
+  return (
+    <section
+      ref={ref}
+      className={["wx-card", className].filter(Boolean).join(" ")}
+      data-sky={sky}
+      style={skyStyle(sky)}
+      onPointerMove={onPointerMove}
+    >
+      <SkyAmbience sky={sky} />
+      <div className="wx-sheen" aria-hidden="true" />
+      <div className="wx-inner">{children}</div>
+    </section>
+  );
 }
 
 export function Header({
@@ -37,7 +69,7 @@ export interface TabOption<V extends string | number> {
   label: string;
 }
 
-/** Segmented control. Buttons use aria-pressed; disabled while loading. */
+/** Choices as words with an underline under the active one. Buttons use aria-pressed. */
 export function Tabs<V extends string | number>({
   label,
   options,
@@ -52,7 +84,7 @@ export function Tabs<V extends string | number>({
   disabled?: boolean;
 }) {
   return (
-    <div className="wx-seg" role="group" aria-label={label}>
+    <div className="wx-tabs" role="group" aria-label={label}>
       {options.map((o) => (
         <button
           key={String(o.value)}
@@ -161,7 +193,7 @@ export function ErrorState({
   );
 }
 
-/** "Weather data by Open-Meteo.com" — opens via the host when it supports openLink. */
+/** "Weather data by Open-Meteo.com", opened through the host when it supports openLink. */
 export function AttributionFooter() {
   const app = useAppInstance();
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {

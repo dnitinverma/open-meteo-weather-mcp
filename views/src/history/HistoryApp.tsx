@@ -5,6 +5,7 @@ import {
   type Place,
 } from "@weather/shared";
 import { useRef } from "react";
+import { skyForRainfall } from "../shared/sky";
 import { useWeatherApp } from "../shared/useWeatherApp";
 import { ViewShell } from "../shared/ViewShell";
 import { HistoryContent } from "./HistoryContent";
@@ -34,6 +35,7 @@ export function HistoryApp() {
   return (
     <ViewShell
       state={state}
+      sky={(d) => skyForRainfall(d.totals.precipitation_sum / Math.max(d.days.length, 1), d.units)}
       onPickPlace={range.current ? pick : undefined}
       render={(data) => <HistoryContent data={data} />}
     />

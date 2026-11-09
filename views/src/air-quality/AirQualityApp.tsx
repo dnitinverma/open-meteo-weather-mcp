@@ -5,6 +5,7 @@ import {
   type Place,
 } from "@weather/shared";
 import { useRef } from "react";
+import { skyForAqi } from "../shared/sky";
 import { useWeatherApp } from "../shared/useWeatherApp";
 import { ViewShell } from "../shared/ViewShell";
 import { AirQualityContent } from "./AirQualityContent";
@@ -24,6 +25,7 @@ export function AirQualityApp() {
   return (
     <ViewShell
       state={state}
+      sky={(d) => skyForAqi(d.current.category)}
       onPickPlace={(p) => request(p, days.current)}
       render={(data) => (
         <AirQualityContent

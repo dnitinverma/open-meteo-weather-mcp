@@ -1,4 +1,5 @@
 import { AQI_BANDS, aqiCategory } from "@weather/shared";
+import type { CSSProperties } from "react";
 
 export const GAUGE_MAX = 500;
 
@@ -15,7 +16,7 @@ export const BAND_COLORS: Record<string, string> = {
 const CX = 120;
 const CY = 112;
 const R = 96;
-const STROKE = 20;
+const STROKE = 14;
 
 /** Angle in radians for a value: 0 → left (π), 500 → right (0). */
 function angle(v: number): number {
@@ -56,7 +57,13 @@ export function AqiGauge({ value }: { value: number }) {
         y1={CY}
         x2={nx}
         y2={ny}
+        key={value}
         className="aq-needle"
+        style={
+          {
+            "--sweep": `${(Math.min(Math.max(value, 0), GAUGE_MAX) / GAUGE_MAX) * 180}deg`,
+          } as CSSProperties
+        }
         strokeWidth={3}
         strokeLinecap="round"
       />

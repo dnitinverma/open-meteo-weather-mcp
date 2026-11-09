@@ -8,7 +8,7 @@ const all: PreviewSection[] = [{ title: "Shared kit", render: () => <KitPreview 
 
 function Preview() {
   return (
-    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 32 }}>
+    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 28 }}>
       {all.map((s) => (
         <section key={s.title}>
           <h2 style={{ fontSize: 15, margin: "0 0 8px" }}>{s.title}</h2>
@@ -18,14 +18,7 @@ function Preview() {
                 key={theme}
                 className={`wx-theme-${theme}`}
                 data-theme={theme}
-                style={{
-                  width: 600,
-                  maxWidth: "100%",
-                  background: "var(--wx-bg)",
-                  color: "var(--wx-text)",
-                  border: "1px solid var(--wx-border)",
-                  borderRadius: 12,
-                }}
+                style={{ width: 600, maxWidth: "100%" }}
               >
                 {s.render()}
               </div>

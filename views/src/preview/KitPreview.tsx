@@ -30,7 +30,7 @@ export function KitPreview() {
   const [days, setDays] = useState(7);
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
   return (
-    <Card>
+    <Card sky="rain">
       <Header
         place={jaipur}
         subtitle="Header + UnitToggle"

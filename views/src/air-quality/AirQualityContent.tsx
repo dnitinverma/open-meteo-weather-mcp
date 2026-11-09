@@ -1,4 +1,5 @@
 import type { AirQualityResult } from "@weather/shared";
+import { AnimatedNumber } from "../shared/AnimatedNumber";
 import { Header, Tabs } from "../shared/components";
 import { clockTime, weekday, shortDate, todayIn } from "../shared/format";
 import { AqiGauge, BAND_COLORS } from "./AqiGauge";
@@ -20,12 +21,14 @@ export function AirQualityContent({
   const range = daily.length > 1 ? 3 : 1;
   return (
     <div className="aq" aria-busy={loading}>
-      <Header place={place} subtitle={`Air quality · ${clockTime(current.time)} local time`} />
+      <Header place={place} subtitle={`Air quality at ${clockTime(current.time)} local time`} />
       <div className="aq-main">
         <AqiGauge value={current.us_aqi} />
         <div className="aq-reading">
           <p className="aq-value">
-            <span className="aq-number">{current.us_aqi}</span>
+            <span className="aq-number">
+              <AnimatedNumber value={current.us_aqi} duration={1000} />
+            </span>
             <span className="aq-unit wx-small wx-muted">US AQI</span>
           </p>
           <p className="aq-category">
