@@ -1,4 +1,4 @@
 import { mount } from "../shared/mount";
-import { PlaceholderApp } from "../shared/PlaceholderApp";
+import { CurrentApp } from "./CurrentApp";
 
-mount(<PlaceholderApp viewName="current" />);
+mount(<CurrentApp />);

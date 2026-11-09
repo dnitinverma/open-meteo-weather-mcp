@@ -1,0 +1,69 @@
+.hc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.hc-legend {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hc-key {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid;
+}
+.hc-key-max {
+  border-color: var(--wx-max);
+}
+.hc-key-min {
+  border-color: var(--wx-min);
+  border-top-style: dashed;
+}
+.hc-wrap {
+  width: 100%;
+}
+.hc-chart {
+  display: block;
+}
+.hc-bar {
+  fill: var(--wx-rain);
+}
+.hc-line-max {
+  stroke: var(--wx-max);
+  stroke-width: 2;
+}
+.hc-line-min {
+  stroke: var(--wx-min);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+.hc-grid {
+  stroke: var(--wx-border);
+  stroke-width: 1;
+}
+.hc-axis {
+  fill: var(--wx-text-muted);
+  font-size: 13px;
+}
+.hc-totals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.hc-totals > div {
+  background: var(--wx-bg-subtle);
+  border-radius: var(--wx-radius-sm);
+  padding: 8px 10px;
+}
+.hc-totals dt {
+  font-size: var(--wx-text-sm);
+  color: var(--wx-text-muted);
+}
+.hc-totals dd {
+  margin: 2px 0 0;
+  font-weight: var(--font-weight-semibold, 600);
+}

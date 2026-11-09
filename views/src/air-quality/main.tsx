@@ -1,4 +1,4 @@
 import { mount } from "../shared/mount";
-import { PlaceholderApp } from "../shared/PlaceholderApp";
+import { AirQualityApp } from "./AirQualityApp";
 
-mount(<PlaceholderApp viewName="air-quality" />);
+mount(<AirQualityApp />);

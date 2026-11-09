@@ -63,6 +63,8 @@ export interface WeatherAppState<T> {
   callTool: (name: ToolName, args: Record<string, unknown>, place?: Place) => Promise<void>;
   app: App | null;
   connectionError: Error | null;
+  /** Arguments of the latest tool call (from the host's tool-input notification or callTool). */
+  input: Record<string, unknown> | null;
 }
 
 /**
@@ -73,6 +75,7 @@ export function useWeatherApp<T>(viewName: string, schema: z.ZodType<T>): Weathe
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<ViewError | null>(null);
   const [loading, setLoading] = useState(true);
+  const [input, setInput] = useState<Record<string, unknown> | null>(null);
   const schemaRef = useRef(schema);
   const knownPlace = useRef<Place | null>(null);
 
@@ -94,7 +97,10 @@ export function useWeatherApp<T>(viewName: string, schema: z.ZodType<T>): Weathe
     appInfo: { name: `open-meteo-weather-${viewName}`, version: "0.1.0" },
     capabilities: {},
     onAppCreated: (created) => {
-      created.ontoolinput = () => setLoading(true);
+      created.ontoolinput = (params) => {
+        setInput((params as { arguments?: Record<string, unknown> }).arguments ?? null);
+        setLoading(true);
+      };
       created.ontoolresult = (params) => apply(params as CallToolResult);
       created.ontoolcancelled = () => setLoading(false);
     },
@@ -106,6 +112,7 @@ export function useWeatherApp<T>(viewName: string, schema: z.ZodType<T>): Weathe
     async (name: ToolName, args: Record<string, unknown>, place?: Place) => {
       if (!app) return;
       if (place) knownPlace.current = place;
+      setInput(args);
       setLoading(true);
       try {
         apply(await app.callServerTool({ name, arguments: args }));
@@ -120,5 +127,5 @@ export function useWeatherApp<T>(viewName: string, schema: z.ZodType<T>): Weathe
     [app, apply],
   );
 
-  return { data, error, loading, callTool, app, connectionError };
+  return { data, error, loading, callTool, app, connectionError, input };
 }
